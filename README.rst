@@ -13,7 +13,7 @@ Scripts
 
 - extract.py: extracts fingerprints and print them to standard output
 - fingerprints.py: the collection of fingerprint definitions
-- howto-fp.rst: fingerprinting manual
+- README.rst: this file
 - requirements.txt: required packages
 - retrieve.py: retrieve a URL and save the results to a JSON file
 - webkit.py: wrapper around QtWebkit
