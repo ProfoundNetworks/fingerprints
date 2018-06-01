@@ -137,12 +137,12 @@ We can see that it works for our JSON file:
     {"category": "web_analytics", "name": "hotjar.com"}
 
 Unfortunately, there's a problem: any page containing the above magic string will register as having the fingerprint, even the page you're reading right now!
-You can check this (we're using pastebin.com instead of the actual URL to the current page because our github repo is currently private):
+You can check this:
 
-    $ python retrieve.py https://pastebin.com/7157S8NL | python extract.py -
-    {"category": "web_technology_tools", "name": "IFrame"}
+    $ python retrieve.py https://github.com/ProfoundNetworks/fingerprints/blob/master/tutorial.md | python extract.py -
     {"category": "web_analytics", "name": "hotjar.com"}
 
+This is obviously wrong: our github page merely mentions hotjar.com, it doesn't actually **use** it.
 This is known as a **false positive**.
 We should avoid false positives as much as possible.
 We could _refine_ our fingerprint to look for the magic string only within scripts:
@@ -153,16 +153,18 @@ def WebAnalytics_Hotjar(page, tree, headers, nreq):
     return bool(tree.xpath('//script[contains(text(), "(function(h,o,t,j,a,r){")]'))
 ```
 
+This way, if the magic string appears outside the script tags, the fingerprint will not be detected.
+
 Let's re-test:
 
 	(fp) sergeyich:fingerprints misha$ python extract.py alienvault.com.json
 	{"category": "web_technology_tools", "name": "IFrame"}
 	{"category": "web_analytics", "name": "hotjar.com"}
 
-So far so good.  Our second fingerprint works correctly for alienvault.com (**true positive**).
+So far so good.  Our fingerprint still works correctly for alienvault.com (**true positive**).
 
-	(fp) sergeyich:fingerprints misha$ python2.7 retrieve.py https://pastebin.com/7157S8NL | python extract.py -
-	{"category": "web_technology_tools", "name": "IFrame"}
+	(fp) sergeyich:fingerprints misha$ python2.7 retrieve.py https://github.com/ProfoundNetworks/fingerprints/blob/master/tutorial.md | python extract.py -
+	(fp) sergeyich:fingerprints misha$
 
 Hooray!  The false positive is gone.
 

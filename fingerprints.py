@@ -45,3 +45,6 @@ def WebTechTools_IFrame(page, tree, headers, nreq):
 @register_fingerprint('web_technology_tools', 'jQuery')
 def WebTechTools_jQuery(page, tree, headers, nreq):
     return bool(tree.xpath(r"""//script[contains(@src,"/jquery.js")]"""))
+@register_fingerprint('web_analytics', 'hotjar.com')
+def WebAnalytics_Hotjar(page, tree, headers, nreq):
+    return "(function(h,o,t,j,a,r){" in page
