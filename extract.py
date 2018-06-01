@@ -46,6 +46,10 @@ def main():
         return False
 
     tree = parse_html(fetched['html'])
+    if tree is None:
+        sys.stderr.write('failed to retrieve or parse the page\n')
+        return
+
     for fp in fingerprints.ALL_FINGERPRINTS:
         if fp(fetched['html'], tree, fetched['headers'], has_fragment):
             sys.stdout.write(json.dumps({'category': fp.category, 'name': fp.name}) + '\n')

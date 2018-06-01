@@ -9,6 +9,7 @@ These steps are:
 4. Examine the Web sites and scope out the fingerprint
 5. Write code to capture the fingerprint
 6. Repeat
+7. Test
 
 Next, we'll look at the steps in more detail.
 
@@ -123,7 +124,7 @@ The callback should return True if the fingerprint is detected.
 So, for example, this would be a good start:
 
 ```python
-@register_fingerprint('web_analytics', 'first-try.hotjar.com')
+@register_fingerprint('web_analytics', 'hotjar.com')
 def WebAnalytics_Hotjar(page, tree, headers, nreq):
     return "(function(h,o,t,j,a,r){" in page
 ```
@@ -133,8 +134,65 @@ We can see that it works for our JSON file:
 
     $ python extract.py alienvault.com.json
     {"category": "web_technology_tools", "name": "IFrame"}
-    {"category": "web_analytics", "name": "first-try.hotjar.com"}
+    {"category": "web_analytics", "name": "hotjar.com"}
+
+Unfortunately, there's a problem: any page containing the above magic string will register as having the fingerprint, even the page you're reading right now!
+You can check this (we're using pastebin.com instead of the actual URL to the current page because our github repo is currently private):
+
+    $ python retrieve.py https://pastebin.com/7157S8NL | python extract.py -
+    {"category": "web_technology_tools", "name": "IFrame"}
+    {"category": "web_analytics", "name": "hotjar.com"}
+
+This is known as a **false positive**.
+We should avoid false positives as much as possible.
+We could _refine_ our fingerprint to look for the magic string only within scripts:
+
+```python
+@register_fingerprint('web_analytics', 'hotjar.com')
+def WebAnalytics_Hotjar(page, tree, headers, nreq):
+    return bool(tree.xpath('//script[contains(text(), "(function(h,o,t,j,a,r){")]'))
+```
+
+Let's re-test:
+
+	(fp) sergeyich:fingerprints misha$ python extract.py alienvault.com.json
+	{"category": "web_technology_tools", "name": "IFrame"}
+	{"category": "web_analytics", "name": "hotjar.com"}
+
+So far so good.  Our second fingerprint works correctly for alienvault.com (**true positive**).
+
+	(fp) sergeyich:fingerprints misha$ python2.7 retrieve.py https://pastebin.com/7157S8NL | python extract.py -
+	{"category": "web_technology_tools", "name": "IFrame"}
+
+Hooray!  The false positive is gone.
+
+Before we end this section, we look at one more way to implement a fingerprint: examining network requests.
+Recall that alienvault.com fetched several resources from hotjar.com:
+
+	jq .all_net_reply alienvault.com.json | grep hotjar
+	  "https://static.hotjar.com/c/hotjar-484365.js?sv=5": {
+	  "https://vars.hotjar.com/rcj-99d43ead6bdf30da8ed5ffcb4f17100c.html": {
+	  "https://script.hotjar.com/modules-0db0f4893a41f570b85a1147d48f9d7f.js": {
+
+We could reimplement our fingerprint to rely on that:
+
+```python
+@register_fingerprint('web_analytics', 'hotjar.com')
+def WebAnalytics_Hotjar(page, tree, headers, nreq):
+    return nreq('//script.hotjar.com')
+```
+
+The nreq function goes through all the network requests, and searches for the '//script.hotjar.com' substring.
+It returns True if the substring is found in any of the request URLs.
+
+## Repeat
+
+The fingerprint is no good if it only works against a single site.
+You should go back to your list of Web sites that use the technology and pick another site.
+Test your fingerprint against the new site.
+If it doesn't show up, then you have a **false negative**, and need to update your fingerprint.
+Keep going until you're satisfied that your fingerprint is robust.
 
 ## Test
 
-## Repeat
+TODO
