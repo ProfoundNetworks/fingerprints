@@ -117,3 +117,8 @@ Implement the fingerprint as a callback in fingerprints.py:
         return False  # The implementation goes here
 
 If you omit the decorator, our software will not detect your new fingerprint.
+
+Ready to Go?
+------------
+
+Check out the `tutorial <tutorial.md>`_, where you can add your own fingerprint!
