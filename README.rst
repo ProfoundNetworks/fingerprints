@@ -29,7 +29,7 @@ To fetch a page and run it through the fingerprint extractor::
 What are Fingerprints?
 ----------------------
 
-A Fingerprint is indicates the presence of a certain Web technology on a domain.
+A Fingerprint indicates the presence of a certain Web technology on a domain.
 Fingerprints are classified by their category and name.
 Currently, we have the following categories:
 
