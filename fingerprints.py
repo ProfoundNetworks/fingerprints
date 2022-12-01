@@ -39,12 +39,18 @@ class register_fingerprint(object):
 
 @register_fingerprint('web_technology_tools', 'IFrame')
 def WebTechTools_IFrame(page, tree, headers, nreq):
-    return bool(tree.xpath(r"""//iframe"""))
+    return bool(tree.css_matches(r"""iframe"""))
 
 
 @register_fingerprint('web_technology_tools', 'jQuery')
 def WebTechTools_jQuery(page, tree, headers, nreq):
-    return bool(tree.xpath(r"""//script[contains(@src,"/jquery.js")]"""))
+    return tree.script_srcs_contain(("/jquery.js",))
+
+
 @register_fingerprint('web_analytics', 'hotjar.com')
 def WebAnalytics_Hotjar(page, tree, headers, nreq):
-    return "(function(h,o,t,j,a,r){" in page
+    return any((
+        "(function(h,o,t,j,a,r){" in page,
+        tree.script_srcs_contain(("static.hotjar.com",)),
+        tree.scripts_contain("static.hotjar.com"),
+    ))
