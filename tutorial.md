@@ -4,10 +4,9 @@ This tutorial goes through the steps of adding a new fingerprint to the fingerpr
 These steps are:
 
 1. Identify the technology and some of its users
-2. Pick a category for your fingerprint
-3. Examine the Web sites and identify the fingerprint
-4. Write code to capture the fingerprint
-5. Repeat for other Web sites
+2. Examine the Web sites and identify the fingerprint
+3. Write code to capture the fingerprint
+4. Repeat for other Web sites
 
 Next, we'll look at the steps in more detail.
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Extract fingerprints from the specified JSON file."""
 import argparse
 import json
