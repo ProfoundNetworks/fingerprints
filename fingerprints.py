@@ -4,8 +4,14 @@
 # flake8: noqa
 """Implements functionality for extracting fingerprints from HTML."""
 
-CATEGORIES = ['web_analytics', 'web_technology_tools', 'social_networks',
-              'advertising', 'cms', 'ecommerce']
+CATEGORIES = (
+    'advertising',
+    'cms',
+    'ecommerce',
+    'social_networks',
+    'web_analytics',
+    'web_technology_tools',
+)
 """A list of allowed fingerprint categories."""
 
 ALL_FINGERPRINTS = []
@@ -37,6 +43,12 @@ class register_fingerprint(object):
         return wrappee
 
 
+#
+# The code above is just plumbing: you don't need to touch or understand it.
+# Add your fingerprints below.
+#
+
+
 @register_fingerprint('web_technology_tools', 'IFrame')
 def WebTechTools_IFrame(page, tree, headers, nreq):
     return bool(tree.css_matches(r"""iframe"""))
@@ -45,12 +57,3 @@ def WebTechTools_IFrame(page, tree, headers, nreq):
 @register_fingerprint('web_technology_tools', 'jQuery')
 def WebTechTools_jQuery(page, tree, headers, nreq):
     return tree.script_srcs_contain(("/jquery.js",))
-
-
-@register_fingerprint('web_analytics', 'hotjar.com')
-def WebAnalytics_Hotjar(page, tree, headers, nreq):
-    return any((
-        "(function(h,o,t,j,a,r){" in page,
-        tree.script_srcs_contain(("static.hotjar.com",)),
-        tree.scripts_contain("static.hotjar.com"),
-    ))
