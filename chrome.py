@@ -139,6 +139,8 @@ except ImportError:
 
 CHROME_CACHE_PATH = P.join(_CHROME_DIR, "Default")
 
+_CHROME_EXE_PATH = os.environ.get('CHROME_EXE', 'google-chrome-stable')
+
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addHandler(logging.NullHandler())
 
@@ -718,7 +720,8 @@ def setup(port: int = _DEFAULT_CHROME_PORT) -> int:
         chrome_sub = subprocess.Popen(cmd)
     else:
         chrome_sub = subprocess.Popen(cmd, stdout=_NULL, stderr=subprocess.STDOUT)
-    version = subprocess.check_output(['google-chrome-stable', '--version']).decode().strip()
+
+    version = subprocess.check_output([_CHROME_EXE_PATH, '--version']).decode().strip()
     _LOGGER.debug("Creating new chrome connection (%s)", version)
     _LOGGER.debug("cmd: %r", cmd)
 
