@@ -60,6 +60,7 @@ import json
 import logging
 import os
 import os.path as P
+import platform
 import socket
 import subprocess
 import sys
@@ -196,13 +197,7 @@ _MIN_PAGE_WAIT = 1.5
 We do this to handle events from pages that contain meta-refresh redirects.
 """
 
-try:
-    _IS_DARWIN = os.uname()[0] == 'Darwin'
-except Exception:
-    #
-    # os.uname is not supported on Windows?
-    #
-    _IS_DARWIN = False
+_IS_DARWIN = platform.uname()[0] == 'Darwin'
 
 _CERTIFICATE_ERROR_PREFIX = "net::ERR_CERT"
 """Errors related to the invalid HTTPS certificate reported by Chrome starts with this prefix"""
