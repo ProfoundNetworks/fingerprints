@@ -264,13 +264,6 @@ def _get_tld(url: str) -> str:
     return tldextract.extract(netloc).suffix
 
 
-def _get_chrome_bin() -> str:
-    """Return the path to the Google Chrome executable."""
-    if _IS_DARWIN:
-        return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    return '/usr/bin/google-chrome'
-
-
 def _close_tab(tab_id: str, timeout: int = _API_TIMEOUT, terminate: bool = False) -> None:
     """Close a tab.
 
@@ -559,7 +552,7 @@ def setup(port: int = _DEFAULT_CHROME_PORT) -> int:
     # https://peter.sh/experiments/chromium-command-line-switches/
     #
     cmd = [
-        _get_chrome_bin(),
+        _CHROME_EXE_PATH,
         '--headless',
         '--remote-debugging-port={}'.format(port),
         '--user-agent={}'.format(_CHROME_USER_AGENT),
