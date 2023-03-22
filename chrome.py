@@ -1261,6 +1261,13 @@ def _gather_all_data(tab: pychrome.Tab, page_state: PageState) -> Result:
     if page_state.redirected_url.startswith('chrome-error://'):
         raise ValueError("Chrome: Error Page")
 
+    def domain(url):
+        parsed = urllib.parse.urlparse(url)
+        return parsed.netloc
+
+    if domain(page_state.requested_url) != domain(page_state.redirected_url):
+        raise ValueError("redirected to " + page_state.redirected_url)
+
     return Result(
         url=page_state.requested_url,
         redirected_url=page_state.redirected_url or page_state.requested_url,
