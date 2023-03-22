@@ -1403,59 +1403,6 @@ def _install(filename: str) -> None:
         subprocess.check_call(['sudo', 'dpkg', '-i', dest])
 
 
-def _bisect():
-    """Determine the most recent usable Chrome binary via a binary search.
-
-    Useful when you suspect a Chrome release may be a broken or incompatible
-    with DBI2 Gecko.
-    """
-    import re
-    import subprocess
-
-    url = 's3://dbi2-ue2/google-chrome-stable/'
-
-    regex = re.compile(r'google-chrome-stable_(?P<version>\d+\.\d+\.\d+\.\d+)-1_amd64.deb')
-
-    listing = subprocess.check_output(['aws', 's3', 'ls', url])
-    versions = {}
-    for line in listing.decode().split('\n'):
-        match = regex.search(line)
-        if match:
-            versions[match.group('version')] = match.group(0)
-
-    last_working_version = ''
-    candidates = sorted(versions, key=lambda x: [int(y) for y in x.split('.')], reverse=True)
-    while len(candidates) > 1:
-        pivot_index = len(candidates) // 2
-        filename = versions[candidates[pivot_index]]
-
-        print(f'Next candidate: {filename} ({len(candidates)} versions left)')
-        _install(filename)
-        print(
-            f'installed {filename}.  '
-            'Now, manually test dbi2.gecko.chrome in a separate terminal window.',
-        )
-
-        good = False
-        while True:
-            print('Does dbi2.gecko.chrome appear to work now?  y/n ', end='')
-            response = input().strip().lower()
-            if response == 'y':
-                last_working_version = candidates[pivot_index]
-                good = True
-                break
-            elif response == 'n':
-                good = False
-                break
-
-        if good:
-            candidates = candidates[:pivot_index]
-        else:
-            candidates = candidates[pivot_index + 1:]
-
-    print(f'last working version: {last_working_version}')
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('url', type=str, help='The URL to retrieve')
